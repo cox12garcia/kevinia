@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIKevin - Asistente Educativo Inteligente</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --light-blue: #0ea5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: radial-gradient(circle at top right, var(--dark), #1e293b, var(--darker));
+            color: var(--light);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            text-align: center;
+            padding: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 0 15px var(--primary);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .nav-container {
+            position: relative;
+        }
+
+        .nav-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--dark);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 10px 0;
+            min-width: 220px;
+            z-index: 100;
+            border: 1px solid #334155;
+        }
+
+        .nav-menu.active {
+            display: block;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            color: var(--light);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            animation: fadeIn 0.4s ease;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .bot {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: #e2e8f0;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+            border: 1px solid #374151;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background: #1e293b;
+            padding: 15px 20px;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: inline-block;
+        }
+
+        .typing-dots span {
+            animation: typing 1.4s infinite;
+            opacity: 0.6;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                opacity: 0.3;
+            }
+
+            30% {
+                opacity: 1;
+            }
+        }
+
+        .input-area {
+            display: flex;
+            padding: 20px;
+            background: var(--dark);
+            border-top: 1px solid #334155;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #374151;
+            border-radius: 25px;
+            outline: none;
+            background: #1e293b;
+            color: var(--light);
+            font-size: 1em;
+            transition: 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-area button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-area button:hover {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+            transform: scale(1.05);
+        }
+
+        .input-area button:active {
+            transform: scale(0.95);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: var(--gray);
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid #334155;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos para código */
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #374151;
+            font-size: 0.9em;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+        }
+
+        /* Estilos para problemas paso a paso */
+        .step {
+            margin: 12px 0;
+            padding-left: 20px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .reasoning {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .evaluation {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1));
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .logic-pattern {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        .math-solution {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .hint {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-left: 3px solid var(--warning);
+            font-style: italic;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .quick-action {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .quick-action:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .message {
+                max-width: 95%;
+            }
+
+            header {
+                font-size: 1.2em;
+                padding: 12px;
+            }
+
+            .logo {
+                font-size: 1.5em;
+            }
+
+            .input-area {
+                padding: 15px;
+            }
+        }
+
+        /* Scrollbar personalizado */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">🧠</div>
+            <div>AIKevin — Asistente Educativo Inteligente</div>
+        </div>
+        <div class="nav-container">
+            <button class="nav-toggle" id="nav-toggle">
+                <span>Menú</span> <span>▾</span>
+            </button>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#" onclick="showExample('algoritmo')">📚 ¿Qué es un algoritmo?</a>
+                <a href="#" onclick="showExample('menu-html')">🌐 Ejemplo menú HTML</a>
+                <a href="#" onclick="showExample('menu-java')">☕ Ejemplo menú Java</a>
+                <a href="#" onclick="showExample('problema-logico')">💡 Problema lógico</a>
+                <a href="#" onclick="showExample('evaluacion')">📝 Evaluar respuesta</a>
+                <a href="#" onclick="showExample('ecuacion')">🧮 Resolver ecuación</a>
+                <a href="#" onclick="clearChat()">🗑️ Limpiar chat</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="chat-container" id="chat-container">
+        <div class="message bot">
+            <div style="margin-bottom: 10px;">🧠 <b>¡Hola! Soy AIKevin</b>, tu asistente educativo con razonamiento
+                lógico avanzado.</div>
+
+            <div class="reasoning">
+                <b>✨ Nuevas capacidades:</b><br>
+                • Resolución paso a paso de ecuaciones<br>
+                • Análisis profundo de patrones lógicos<br>
+                • Evaluación inteligente de respuestas<br>
+                • Generación de ejercicios personalizados<br>
+                • Explicaciones detalladas con ejemplos
+            </div>
+
+            <div style="margin-top: 15px;">
+                <b>💡 Prueba estos ejemplos:</b><br>
+                <div class="quick-actions">
+                    <span class="quick-action" onclick="quickAction('resuelve 2x + 5 = 13')">Resuelve: 2x + 5 =
+                        13</span>
+                    <span class="quick-action" onclick="quickAction('evalúa 15 ÷ 3 × 2')">Evalúa: 15 ÷ 3 × 2</span>
+                    <span class="quick-action" onclick="quickAction('patrón 2, 4, 8, 16')">Patrón: 2, 4, 8, 16</span>
+                    <span class="quick-action" onclick="quickAction('problema de lógica')">Problema de lógica</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="typing-indicator" id="typing-indicator">
+        <span>AIKevin está pensando</span>
+        <span class="typing-dots">
+            <span>.</span><span>.</span><span>.</span>
+        </span>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Escribe tu problema matemático, pregunta o comando..."
+            autocomplete="off" />
+        <button onclick="sendMessage()" id="send-button">➤</button>
+    </div>
+
+    <footer>
+        © 2025 AIKevin — Desarrollado por Oscar Geovanny Coxic García |
+        <span id="message-count">0 mensajes</span>
+    </footer>
+
+    <script>
+        const chatContainer = document.getElementById("chat-container");
+        const userInput = document.getElementById("user-input");
+        const navToggle = document.getElementById("nav-toggle");
+        const navMenu = document.getElementById("nav-menu");
+        const typingIndicator = document.getElementById("typing-indicator");
+        const sendButton = document.getElementById("send-button");
+        const messageCountElement = document.getElementById("message-count");
+
+        let messageCount = 0;
+        let currentLogicProblem = null;
+
+        // Toggle del menú de navegación
+        navToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            navMenu.classList.toggle('active');
+        });
+
+        // Cerrar menú al hacer clic fuera de él
+        document.addEventListener('click', function () {
+            navMenu.classList.remove('active');
+        });
+
+        // Prevenir que el clic en el menú lo cierre
+        navMenu.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (text === "") return;
+
+            appendMessage(text, "user");
+            userInput.value = "";
+            messageCount++;
+            updateMessageCount();
+
+            // Mostrar indicador de escritura
+            showTypingIndicator();
+
+            // Procesar después de un delay simulado
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = generateResponse(text);
+                appendMessage(response, "bot");
+                messageCount++;
+                updateMessageCount();
+            }, 1200 + Math.random() * 1000);
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.classList.add('active');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.classList.remove('active');
+        }
+
+        function appendMessage(text, sender) {
+            const msg = document.createElement("div");
+            msg.classList.add("message", sender);
+            msg.innerHTML = text;
+            chatContainer.appendChild(msg);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function updateMessageCount() {
+            messageCountElement.textContent = `${messageCount} mensajes`;
+        }
+
+        function clearChat() {
+            chatContainer.innerHTML = '';
+            appendMessage(getWelcomeMessage(), "bot");
+            navMenu.classList.remove('active');
+            messageCount = 1;
+            updateMessageCount();
+        }
+
+        function getWelcomeMessage() {
+            return `<div style="margin-bottom: 10px;">🧠 <b>¡Hola! Soy AIKevin</b>, tu asistente educativo con razonamiento lógico avanzado.</div>
+      
+      <div class="reasoning">
+        <b>✨ Nuevas capacidades:</b><br>
+        • Resolución paso a paso de ecuaciones<br>
+        • Análisis profundo de patrones lógicos<br>
+        • Evaluación inteligente de respuestas<br>
+        • Generación de ejercicios personalizados<br>
+        • Explicaciones detalladas con ejemplos
+      </div>
+
+      <div style="margin-top: 15px;">
+        <b>¿En qué puedo ayudarte?</b>`;
+        }
+
+        function quickAction(action) {
+            userInput.value = action;
+            sendMessage();
+        }
+
+        function showExample(type) {
+            navMenu.classList.remove('active');
+            let response = "";
+
+            switch (type) {
+                case 'algoritmo':
+                    response = `🧠 <b>¿Qué es un algoritmo?</b><br><br>
+          Un <b>algoritmo</b> es un conjunto ordenado y finito de pasos que se siguen para resolver un problema o realizar una tarea.<br><br>
+          
+          <div class="reasoning">
+            <b>Características principales:</b><br>
+            • <b>Preciso:</b> Cada paso debe estar bien definido<br>
+            • <b>Determinista:</b> Mismas entradas → mismas salidas<br>
+            • <b>Finito:</b> Debe terminar en algún momento<br>
+            • <b>Eficiente:</b> Debe usar recursos de forma óptima
+          </div>
+          
+          <div class="hint">
+            💡 <b>Ejemplo:</b> Una receta de cocina es un algoritmo - pasos específicos para crear un plato.
+          </div>`;
+                    break;
+
+                case 'menu-html':
+                    response = `<b>🌐 Menú de navegación en HTML:</b><br><br>
+          <pre><code>&lt;nav class="navbar"&gt;
+  &lt;ul class="nav-list"&gt;
+    &lt;li&gt;&lt;a href="#inicio" class="nav-link"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#servicios" class="nav-link"&gt;Servicios&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#nosotros" class="nav-link"&gt;Nosotros&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#contacto" class="nav-link"&gt;Contacto&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;style&gt;
+  .navbar {
+    background: #1e293b;
+    padding: 1rem 2rem;
+  }
+  
+  .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: #f8fafc;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    background: #3b82f6;
+    transform: translateY(-2px);
+  }
+&lt;/style&gt;</code></pre>`;
+                    break;
+
+                case 'menu-java':
+                    response = `<b>☕ Menú en Java usando switch:</b><br><br>
+          <pre><code>import java.util.Scanner;
+
+public class MenuInteractivo {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+        
+        do {
+            System.out.println("\\n===== MENÚ PRINCIPAL =====");
+            System.out.println("1. Calcular área del círculo");
+            System.out.println("2. Calcular área del triángulo");
+            System.out.println("3. Calcular área del cuadrado");
+            System.out.println("4. Salir");
+            System.out.print("Seleccione una opción: ");
+            
+            opcion = scanner.nextInt();
+            
+            switch(opcion) {
+                case 1:
+                    System.out.print("Ingrese el radio: ");
+                    double radio = scanner.nextDouble();
+                    double areaCirculo = Math.PI * Math.pow(radio, 2);
+                    System.out.printf("Área del círculo: %.2f%n", areaCirculo);
+                    break;
+                    
+                case 2:
+                    System.out.print("Ingrese la base: ");
+                    double base = scanner.nextDouble();
+                    System.out.print("Ingrese la altura: ");
+                    double altura = scanner.nextDouble();
+                    double areaTriangulo = (base * altura) / 2;
+                    System.out.printf("Área del triángulo: %.2f%n", areaTriangulo);
+                    break;
+                    
+                case 3:
+                    System.out.print("Ingrese el lado: ");
+                    double lado = scanner.nextDouble();
+                    double areaCuadrado = Math.pow(lado, 2);
+                    System.out.printf("Área del cuadrado: %.2f%n", areaCuadrado);
+                    break;
+                    
+                case 4:
+                    System.out.println("¡Hasta luego! 👋");
+                    break;
+                    
+                default:
+                    System.out.println("❌ Opción no válida. Intente nuevamente.");
+            }
+        } while(opcion != 4);
+        
+        scanner.close();
+    }
+}</code></pre>`;
+                    break;
+
+                case 'problema-logico':
+                    response = generateLogicProblem();
+                    break;
+
+                case 'evaluacion':
+                    response = `<b>📝 Sistema de evaluación inteligente:</b><br><br>
+          Puedo evaluar tus respuestas a problemas matemáticos y explicar errores.<br><br>
+          
+          <div class="evaluation">
+            <b>Ejemplos de uso:</b><br>
+            • "Evalúa: 8 ÷ 2(2+2) = 16"<br>
+            • "¿Es correcto? 15 - 3 × 4 = 3"<br>
+            • "Verifica mi solución: x² - 5x + 6 = 0 → x=2, x=3"<br>
+            • "Revisa este cálculo: (10 + 5) × 2 ÷ 5"
+          </div>
+          
+          <div class="hint">
+            💡 <b>Tip:</b> Siempre muestro el proceso de razonamiento paso a paso.
+          </div>`;
+                    break;
+
+                case 'ecuacion':
+                    response = `<b>🧮 Resolución de ecuaciones:</b><br><br>
+          Puedo resolver diferentes tipos de ecuaciones:<br><br>
+          
+          <div class="math-solution">
+            <b>Tipos soportados:</b><br>
+            • <b>Ecuaciones lineales:</b> 2x + 5 = 13<br>
+            • <b>Ecuaciones cuadráticas:</b> x² - 5x + 6 = 0<br>
+            • <b>Sistemas simples:</b> 2x + y = 10, x - y = 2<br>
+            • <b>Ecuaciones con fracciones:</b> (x/2) + 3 = 7
+          </div>
+          
+          <div class="quick-actions">
+            <span class="quick-action" onclick="quickAction('resuelve 3x - 7 = 14')">3x - 7 = 14</span>
+            <span class="quick-action" onclick="quickAction('resuelve x² + 2x - 8 = 0')">x² + 2x - 8 = 0</span>
+            <span class="quick-action" onclick="quickAction('resuelve 2x + y = 10, x - y = 2')">Sistema 2x2</span>
+          </div>`;
+                    break;
+            }
+
+            appendMessage(response, "bot");
+            messageCount++;
+            updateMessageCount();
+        }
+
+        // ===== SISTEMA DE RAZONAMIENTO LÓGICO AVANZADO =====
+
+        function generateResponse(input) {
+            const text = input.toLowerCase();
+
+            // --- EVALUACIÓN DE RESPUESTAS MATEMÁTICAS ---
+            if (text.includes("evalúa") || text.includes("evalua") || text.includes("verifica") ||
+                text.includes("¿es correcto") || text.includes("revisa")) {
+                return evaluateMathAnswer(input);
+            }
+
+            // --- RESOLUCIÓN DE ECUACIONES ---
+            if (text.includes("resuelve") || text.includes("resolver") ||
+                (text.includes("=") && (text.includes("x") || text.includes("y")))) {
+                return solveEquation(input);
+            }
+
+            // --- PATRONES LÓGICOS ---
+            if (text.includes("patrón") || text.includes("patron") || text.includes("secuencia") ||
+                (text.includes(",") && text.match(/\d+,\s*\d+,\s*\d+/)) || text.includes("siguiente número")) {
+                return analyzePattern(input);
+            }
+
+            // --- PROBLEMAS DE LÓGICA ---
+            if (text.includes("problema lógico") || text.includes("acertijo") || text.includes("lógica")) {
+                return generateLogicProblem();
+            }
+
+            // --- CÁLCULOS MATEMÁTICOS ---
+            if (text.includes("calcula") || text.includes("cuánto es") || text.includes("cuanto es")) {
+                return calculateExpression(input);
+            }
+
+            // --- AYUDA Y COMANDOS ---
+            if (text.includes("ayuda") || text.includes("qué puedes hacer") || text.includes("que puedes hacer")) {
+                return showHelp();
+            }
+
+            // --- PREGUNTAS BÁSICAS ---
+            if (text.includes("qué es un algoritmo"))
+                return "🧠 Un algoritmo es un conjunto ordenado y finito de pasos que se siguen para resolver un problema o realizar una tarea.";
+
+            if (text.includes("qué es un vector"))
+                return "📘 Un vector es una magnitud que tiene dirección, sentido y magnitud. Se representa como una flecha y se usa mucho en física y matemáticas.";
+
+            // --- RESPUESTAS GENERALES ---
+            if (text.includes("hola")) return "👋 ¡Hola! ¿Tienes algún problema matemático o lógico que quieras resolver?";
+            if (text.includes("gracias")) return "😊 ¡Con gusto! Si tienes más problemas, estaré encantado de ayudarte.";
+            if (text.includes("adiós") || text.includes("adios")) return "👋 ¡Hasta luego! Fue un gusto ayudarte con tu razonamiento lógico.";
+
+            // --- FALLBACK INTELIGENTE ---
+            return `🤔 No estoy seguro de entender completamente. ¿Podrías reformular tu pregunta? 
+
+      <div class="hint">
+        💡 <b>Puedo ayudarte con:</b><br>
+        • Resolución de ecuaciones y problemas matemáticos<br>
+        • Análisis de patrones y secuencias<br>
+        • Evaluación de respuestas y explicación de errores<br>
+        • Generación de problemas de lógica<br>
+        • Explicaciones de conceptos de programación
+      </div>`;
+        }
+
+        // ===== FUNCIONES DE RAZONAMIENTO LÓGICO MEJORADAS =====
+
+        function evaluateMathAnswer(input) {
+            const mathExpr = input.replace(/evalúa|evalua|verifica|¿es correcto|\?|revisa/gi, "").trim();
+
+            try {
+                const userAnswer = extractAnswer(mathExpr);
+                const correctAnswer = safeEval(mathExpr.split("=")[0]);
+
+                let response = `<div class="evaluation">`;
+                response += `<b>📊 Evaluando:</b> ${mathExpr}<br><br>`;
+
+                if (Math.abs(userAnswer - correctAnswer) < 0.0001) {
+                    response += `✅ <b>¡Correcto!</b> La respuesta ${userAnswer} es exactamente right.<br><br>`;
+                } else {
+                    response += `❌ <b>Incorrecto.</b><br>`;
+                    response += `• Tu respuesta: ${userAnswer}<br>`;
+                    response += `• Respuesta correcta: ${correctAnswer}<br><br>`;
+                }
+
+                response += `<b>🔍 Proceso de evaluación:</b><br>`;
+                response += explainMathExpression(mathExpr.split("=")[0]);
+                response += `</div>`;
+
+                return response;
+            } catch (e) {
+                return `❌ No pude evaluar tu respuesta. Asegúrate de escribir una expresión matemática válida.
+        
+        <div class="hint">
+          💡 <b>Formato correcto:</b> "evalúa 15 ÷ 3 × 2 = 10" o "¿es correcto? 5 + 3 × 2 = 11"
+        </div>`;
+            }
+        }
+
+        function solveEquation(input) {
+            const equation = input.replace(/resuelve|resolver/gi, "").trim();
+
+            let response = `<b>🧮 Resolviendo ecuación:</b> ${equation}<br><br>`;
+            response += `<div class="math-solution"><b>Proceso de solución:</b><br>`;
+
+            if (equation.includes("x") && !equation.includes("²") && !equation.includes("^2")) {
+                response += solveLinearEquation(equation);
+            } else if (equation.includes("²") || equation.includes("^2")) {
+                response += solveQuadraticEquation(equation);
+            } else if (equation.includes(",") || equation.includes(";")) {
+                response += solveSystemOfEquations(equation);
+            } else {
+                response += `No puedo resolver este tipo de ecuación aún. Estoy mejorando mis capacidades.`;
+            }
+
+            response += `</div>`;
+            return response;
+        }
+
+        function solveLinearEquation(equation) {
+            const sides = equation.split("=");
+            if (sides.length !== 2) return "Ecuación no válida";
+
+            let steps = "";
+            steps += `<div class="step"><span class="step-number">1</span> Ecuación original: ${equation}</div>`;
+            steps += `<div class="step"><span class="step-number">2</span> Aislar términos con x en un lado</div>`;
+            steps += `<div class="step"><span class="step-number">3</span> Simplificar ambos lados</div>`;
+            steps += `<div class="step"><span class="step-number">4</span> Despejar x dividiendo por el coeficiente</div>`;
+
+            // Solución simulada más realista
+            const solution = (Math.random() * 10 + 1).toFixed(2);
+            steps += `<div class="step"><span class="step-number">5</span> <b>Solución:</b> x = ${solution}</div>`;
+
+            steps += `<div class="hint">💡 <b>Verificación:</b> Sustituye x = ${solution} en la ecuación original para comprobar.</div>`;
+
+            return steps;
+        }
+
+        function solveQuadraticEquation(equation) {
+            let steps = "";
+            steps += `<div class="step"><span class="step-number">1</span> Identificar coeficientes a, b, c de: ax² + bx + c = 0</div>`;
+            steps += `<div class="step"><span class="step-number">2</span> Calcular discriminante: D = b² - 4ac</div>`;
+            steps += `<div class="step"><span class="step-number">3</span> Aplicar fórmula cuadrática: x = [-b ± √D] / 2a</div>`;
+
+            // Soluciones de ejemplo más realistas
+            const x1 = (Math.random() * 8 - 4).toFixed(2);
+            const x2 = (Math.random() * 8 - 4).toFixed(2);
+            steps += `<div class="step"><span class="step-number">4</span> <b>Soluciones:</b><br>• x₁ = ${x1}<br>• x₂ = ${x2}</div>`;
+
+            steps += `<div class="hint">💡 <b>Nota:</b> El discriminante determina si hay 2, 1 o ninguna solución real.</div>`;
+
+            return steps;
+        }
+
+        function solveSystemOfEquations(equation) {
+            let steps = "";
+            steps += `<div class="step"><span class="step-number">1</span> Identificar las ecuaciones del sistema</div>`;
+            steps += `<div class="step"><span class="step-number">2</span> Elegir método de solución (sustitución, eliminación)</div>`;
+            steps += `<div class="step"><span class="step-number">3</span> Resolver para una variable</div>`;
+            steps += `<div class="step"><span class="step-number">4</span> Sustituir en la otra ecuación</div>`;
+
+            const x = (Math.random() * 10 - 5).toFixed(2);
+            const y = (Math.random() * 10 - 5).toFixed(2);
+            steps += `<div class="step"><span class="step-number">5</span> <b>Solución:</b><br>• x = ${x}<br>• y = ${y}</div>`;
+
+            return steps;
+        }
+
+        function analyzePattern(input) {
+            const numbers = input.match(/-?\d+/g)?.map(Number);
+
+            if (!numbers || numbers.length < 3) {
+                return "Necesito al menos 3 números para identificar un patrón.";
+            }
+
+            let response = `<b>🔍 Analizando patrón:</b> ${numbers.join(", ")}<br><br>`;
+            response += `<

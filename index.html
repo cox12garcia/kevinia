@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIKevin — Tu Asistente Inteligente</title>
+
+    <style>
+        /* --- Estilos generales --- */
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: radial-gradient(circle at top right, #0f172a, #1e293b, #020617);
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            animation: fadeInDown 1s ease;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #cbd5e1;
+            margin-top: 10px;
+        }
+
+        /* --- Sección principal --- */
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .bot-image {
+            flex: 1 1 300px;
+            text-align: center;
+        }
+
+        .bot-image img {
+            width: 260px;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #38bdf8;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .description {
+            flex: 1 1 400px;
+            text-align: left;
+        }
+
+        .description h2 {
+            font-size: 2em;
+            color: #93c5fd;
+        }
+
+        .description p {
+            color: #e2e8f0;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            box-shadow: 0 0 15px #38bdf8;
+            transform: scale(1.05);
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 30px 10px;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🤖 AIKevin</h1>
+        <p>Tu asistente virtual diseñado para resolver problemas, enseñar y pensar contigo.</p>
+    </header>
+
+    <div class="container">
+        <div class="bot-image">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AIKevin Bot">
+        </div>
+
+        <div class="description">
+            <h2>Conoce a AIKevin</h2>
+            <p>
+                AIKevin es un asistente inteligente creado para ayudarte a comprender, aprender y crear soluciones.
+                Desde resolver problemas algorítmicos hasta generar ideas creativas, AIKevin combina lógica,
+                lenguaje y tecnología para ofrecerte respuestas precisas y útiles.
+            </p>
+            <p>
+                Diseñado con inteligencia artificial moderna, AIKevin puede explicar temas, generar código,
+                elaborar pseudocódigos, y mucho más.
+            </p>
+
+            <a href="chat.html" class="button">Hablar con AIKevin</a>
+        </div>
+    </div>
+
+    <footer>
+        © 2025 AIKevin.
+    </footer>
+
+</body>
+
+</html>
